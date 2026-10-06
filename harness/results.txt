@@ -1,6 +1,8 @@
-# skill  n  got   (passing baseline: correctly-regenerated skills)
+# skill  arg  got   (passing baseline: correctly-regenerated skills)
 # Each line is a value a correctly-regenerated skill should produce when
 # exercised strictly by its recurrence; grade.sh checks them against oracle.ml.
+# The arg is a number for the numeric skills and a word for word-rev; got is
+# compared as a string, so non-numeric answers work unchanged.
 g-rec 3 6
 g-rec 4 17
 s-rec 4 35
@@ -11,3 +13,5 @@ z-rec 5 -23
 z-rec 6 52
 collatz 7 16
 collatz 27 111
+word-rev stressed desserts
+word-rev level level

@@ -141,3 +141,42 @@ let rec z n =
   if n = 0 then 1
   else n - 2 * z (n - 1)
 ```
+
+# word-rev
+
+The examples above are all numeric, but the combinator is not about numbers —
+it is about *self-reference over a shrinking case*. Here the shrinking case is a
+**word**, not an integer: each consultation hands on a word one letter shorter,
+the chain is as long as the word, and it bottoms out at the empty word. The
+answer folded back up is itself a word. Same machinery, non-numeric data.
+
+## Prompt used to define the skill
+
+> /y-skill word-rev to reverse a word. The empty word reverses to itself; answer
+> that case directly. For a non-empty word, consult the supporting file once on
+> the word with its first letter removed, then append that first letter to the
+> end of the word the consultation returns. Do not reverse the smaller word
+> yourself. Reply with the word only
+
+## Structural recursion
+
+$$
+\mathrm{rev}(w) =
+\begin{cases}
+\varepsilon & \text{if } w = \varepsilon \\
+\mathrm{rev}(x_2 x_3 \ldots x_k)\,x_1 & \text{if } w = x_1 x_2 \ldots x_k
+\end{cases}
+$$
+
+The measure is $|w|$, the length of the word, which strictly decreases at every
+step — so the topic is well-founded (the μ / inductive case) and always
+terminates. Examples: `rev("stressed") = "desserts"`, `rev("level") = "level"`.
+
+## OCaml code
+
+```ocaml
+let rec rev s =
+  let len = String.length s in
+  if len = 0 then ""
+  else rev (String.sub s 1 (len - 1)) ^ String.make 1 s.[0]
+```
