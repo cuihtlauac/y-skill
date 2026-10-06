@@ -296,3 +296,7 @@ infinite-context hypothesis.
 *Caveat: a negative search result is not proof. Something this small could live
 in an un-indexed gist or blog post; this is "not a known pattern", not "provably
 first". Searched October 2026.*
+
+## License
+
+[MIT](LICENSE) © 2026 Cuihtlauac Alvarado.
