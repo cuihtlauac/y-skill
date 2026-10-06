@@ -1,0 +1,93 @@
+# Minimum test harness
+
+Tests that the `y-skill` combinator **regenerates** a secondary skill correctly
+and that the regenerated skill, when **exercised**, computes the right values.
+Two gates:
+
+- **Structural** — every child skill carries the combinator's three kept
+  sections byte-for-byte (`structural.sh`). Pure text, deterministic.
+- **Behavioural** — the values an exercised skill produces match a reference
+  OCaml **oracle** (`oracle.ml` + `grade.sh`).
+
+No Python: the gates are POSIX shell, the oracle is OCaml, and a `Makefile`
+ties them together.
+
+## Components
+
+| File | Role |
+|------|------|
+| `oracle.ml` | Ground-truth recurrences (`g-rec`, `s-rec`, `q-rec`, `z-rec`). `opam exec -- ocaml harness/oracle.ml <skill> <n>` prints the value. |
+| `structural.sh` | Kept sections are the file's tail (from the first kept header to EOF); compares that tail to `y-skill/SKILL.md` for every child. Exits non-zero on drift. |
+| `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch. |
+| `results.txt` | Passing baseline (correctly-regenerated `g-rec`). |
+| `Makefile` | `test` (both gates), `structural`, `grade`, `broken` (negative control), `clean`. |
+
+## Running it
+
+### Deterministic gates (cheap, repeatable)
+
+```sh
+make -C harness test      # structural + behavioural on the baseline
+make -C harness broken    # negative control: injected fault MUST be rejected
+```
+
+(or `cd harness && make test`). The individual gates are also runnable directly:
+`sh harness/structural.sh .` and `sh harness/grade.sh harness/results.txt`.
+
+### Agent-driven stage: regenerate + exercise
+
+This is the part that actually tests the combinator. For each skill spec in
+`../PROMPTS.md`, run one agent that (1) regenerates `.claude/skills/<name>/SKILL.md`
+the y-skill way — new frontmatter + topic section, the three kept sections copied
+verbatim from `y-skill/SKILL.md` — (2) runs `structural.sh`, and (3) exercises the
+file it just wrote on a few inputs, computing **strictly by the recurrence as
+written** (no outside knowledge, no "fixing"). Each agent returns one line:
+
+```json
+{"skill":"g-rec","variant":"correct","structural_pass":true,"values":[{"n":3,"got":6},{"n":4,"got":17}]}
+```
+
+Append the values to `harness/results.txt` as `<skill> <n> <got>` lines, then
+`make -C harness grade`.
+
+Include **one deliberately-broken variant** (inject a known fault, e.g. the
+`−2·G(n−2)` coefficient) to confirm the harness fails as it should — that is what
+`make -C harness broken` automates.
+
+## Minimum run on record
+
+| Variant | Regenerated recurrence | structural | exercised G(3), G(4) | oracle | behavioural |
+|---------|------------------------|:----------:|----------------------|--------|:-----------:|
+| correct | `3·G(n−1) − G(n−2) + 1` | PASS | 6, 17 | 6, 17 | **PASS** |
+| broken  | `3·G(n−1) − 2·G(n−2) + 1` | PASS | −1, −2 | 6, 17 | **FAIL** (caught) |
+
+The broken variant passes the structural gate (kept sections untouched) and is
+caught only by the behavioural gate — which is exactly the separation we want:
+structure and behaviour are independent failure modes.
+
+## ⚠️ Known limitation: worktree isolation does not hold here
+
+The intent was to run each agent in its own git **worktree** so regenerations
+(especially the broken one) never touch the real tree. **This does not work as-is**
+because `y-skill` is a *nested* git repo inside the outer `ai-training` repo. The
+Agent tool's `isolation: worktree` forks the **session's** git root (the outer
+repo), whose worktree does **not** contain the nested `y-skill` files — so the
+agents fall back to writing the real `.claude/skills/<name>/SKILL.md`. In the run
+above, the broken agent clobbered the live `g-rec`, which then had to be restored
+by hand.
+
+Until this is fixed, the agent-driven stage **mutates the real tree** — regenerate
+a known-good copy afterwards, or only run the correct variants live. Fix
+directions (for the full harness):
+
+1. Launch the agents with the **`y-skill` repo as their git root** (so the worktree
+   forks `y-skill`, not the outer repo), or
+2. drop git worktrees for this and have the harness copy `.claude/skills/` +
+   `harness/` into a throwaway temp dir per case, run the agent there, and read
+   back only the JSON.
+
+## Deferred
+
+Exercising a skill by **spawning one subagent per recursion frame** (the subagent
+tree as an externalized stack, to push depth past a single context window) is left
+for later — see the "infinite-context" discussion in the top-level README.

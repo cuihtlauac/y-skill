@@ -1,0 +1,3 @@
+# skill  n  got   (passing baseline: correctly-regenerated g-rec)
+g-rec 3 6
+g-rec 4 17
