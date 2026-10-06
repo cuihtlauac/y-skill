@@ -269,6 +269,44 @@ order:
 4. **No native return** — there is no call stack, so the state file *is* the
    entire return mechanism; it is the part most likely to go wrong.
 
+### A detour that didn't pan out: subagents
+
+Before the disk trampoline, the obvious-looking fix is to give each frame its
+**own context window** by spawning a subagent per consultation — the subagent
+tree as an externalized stack. We prototyped it:
+[`word-rev-sub`](.claude/skills/word-rev-sub/SKILL.md) is a sibling of
+`word-rev` whose only change is
+that "consult" means *spawn a subagent on the shorter word* instead of re-read
+the file in place. A live run on `"cat"` returned the correct `"tac"`.
+
+But the run pinned down why this is the wrong tool. In Claude Code (tested
+2026-10-06) an `Agent`-spawned subagent has **no spawning tool of its own**, so
+nesting caps at **depth 1**: the top invocation spawns one child, but that child
+cannot spawn a grandchild. (The child reversing `"at"` returned `"ta"` and
+reported it could not recurse on the tail `"t"`.) You cannot build a deep chain
+of nested windows.
+
+The deeper point survives even without that cap: **subagents buy breadth, not
+depth.** They excel at many *independent* subproblems in parallel, each in a
+fresh window. But every recurrence here is a *depth* problem — one long
+sequential chain where each frame needs the one below it. With nesting capped you
+fall back to an orchestrator loop, which merely **moves the pile**: the leaf
+agents are O(1), but the orchestrator accumulates one call-record per frame in
+its *own* window, so the shape is still `O(depth)` — a smaller constant than the
+inlined version, not an unbounded tape. Block-folding gets you to roughly
+`√depth` per window, but depth-1 caps that at two levels. On top of that you pay
+`depth` sequential round-trips, `depth` invocations, and compounding
+per-spawn failure.
+
+Conclusion: for a *depth*-bound recursion, subagents are a bad trade, and the
+**disk trampoline above remains the right mechanism** — bounded control plus an
+unbounded external tape, with no nesting cap. For the *linear* family
+(`word-rev`, `s-rec`, `q-rec`, `z-rec`) there is an even cheaper fix that needs
+neither the tape nor subagents: rewrite the instruction with an **accumulator**
+so the live state is O(1) and a single window recurses arbitrarily deep — their
+blow-up is self-inflicted non-tail recursion, not a genuine context need.
+`word-rev-sub` is kept as a documented *limited result*, not a recommended path.
+
 ### So is it Turing complete?
 
 Yes — under the idealizations above (unbounded store, faithful interpreter),

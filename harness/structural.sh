@@ -17,6 +17,9 @@ rc=0
 for d in "$SKILLS"/*/; do
   name=$(basename "$d")
   [ "$name" = y-skill ] && continue
+  # word-rev-sub is a sibling combinator, not a faithful child: it deliberately
+  # rewrites the kept sections (consult = spawn a subagent, not re-read).
+  [ "$name" = word-rev-sub ] && continue
   [ -f "$d/SKILL.md" ] || continue
   if kept "$d/SKILL.md" | diff -q - "$ref" >/dev/null 2>&1; then
     echo "MATCH  $name"
