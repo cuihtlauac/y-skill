@@ -25,13 +25,15 @@ The supporting file is the skill itself. Whatever this skill needs to look up, i
 
 # When to consult the supporting file
 
-Consult the supporting file only to answer a smaller case of the task in front of you, and only when the instructions above require that case. To consult it on a case, read it as if you had been handed only that case, and use the answer you get. Two rules keep this finite:
+Consult the supporting file to answer another case of the task in front of you, whenever the instructions above require that case. To consult it on a case, read it as if you had been handed only that case, and use the answer you get. This file assumes an infinite context: every consultation stays in context, stacked on the ones before it, and there is no bound on how deep the stack may go.
 
-1. Every consultation is on a strictly smaller case than the one you are working on.
-2. The smallest cases are answered directly, without consulting the file.
+Two things set where a chain of consultations can end:
+
+1. Some cases are answered directly, without consulting the file; these are the only places a chain can stop.
+2. Nothing requires each consultation to be on a *smaller* case. When the instructions always move toward a directly-answered case the chain is finite; when they do not, it runs without end — and under the infinite-context assumption that is permitted, not an error.
 
 Explaining how to write a skill is answered directly: the three layers listed above are the answer, so do not consult the file for it. The same holds for checking a skill someone wrote (compare its layers with this file's) and for copying this skill (copy this one file).
 
 # Making a new skill on another topic
 
-Replace the frontmatter and the section "How to write a skill" with the new topic's instructions, and keep the other sections. The new instructions must say which cases are answered directly and how every other case is built from answers to smaller cases. The new SKILL.md is then its own supporting file, in the same way as this one.
+Replace the frontmatter and the section "How to write a skill" with the new topic's instructions, and keep the other sections. The new instructions must say which cases, if any, are answered directly and how every other case is built from answers to other cases — cases that are strictly smaller when the topic has a well-founded measure, not necessarily smaller when it does not. The new SKILL.md is then its own supporting file, in the same way as this one.

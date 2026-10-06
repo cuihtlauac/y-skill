@@ -3,6 +3,7 @@
 .claude/skills/g-rec/
 .claude/skills/s-rec/
 .claude/skills/hanoi-moves/
+.claude/skills/collatz/
 
 # Earlier standalone sketch of the same idea
 rec/
