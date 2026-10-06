@@ -1,0 +1,11 @@
+# Only the y-skill meta-skill is tracked.
+# Generated skills are reproducible via /y-skill, so they are not committed.
+.claude/skills/g-rec/
+.claude/skills/s-rec/
+.claude/skills/hanoi-moves/
+
+# Earlier standalone sketch of the same idea
+rec/
+
+# Archive
+files.zip
