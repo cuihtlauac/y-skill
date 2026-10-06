@@ -2,7 +2,8 @@
 # Generated skills are reproducible via /y-skill, so they are not committed.
 .claude/skills/g-rec/
 .claude/skills/s-rec/
-.claude/skills/hanoi-moves/
+.claude/skills/q-rec/
+.claude/skills/z-rec/
 .claude/skills/collatz/
 
 # Earlier standalone sketch of the same idea

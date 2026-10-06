@@ -16,10 +16,10 @@ ties them together.
 
 | File | Role |
 |------|------|
-| `oracle.ml` | Ground-truth recurrences (`g-rec`, `s-rec`, `q-rec`, `z-rec`). `opam exec -- ocaml harness/oracle.ml <skill> <n>` prints the value. |
+| `oracle.ml` | Ground-truth recurrences (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`). `opam exec -- ocaml harness/oracle.ml <skill> <n>` prints the value. `collatz` is not structurally decreasing (the Collatz conjecture); it terminates for every tested `n` but there is no proof it does for all. |
 | `structural.sh` | Kept sections are the file's tail (from the first kept header to EOF); compares that tail to `y-skill/SKILL.md` for every child. Exits non-zero on drift. |
 | `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch. |
-| `results.txt` | Passing baseline (correctly-regenerated `g-rec`). |
+| `results.txt` | Passing baseline for every recursion (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`). |
 | `Makefile` | `test` (both gates), `structural`, `grade`, `broken` (negative control), `clean`. |
 
 ## Running it

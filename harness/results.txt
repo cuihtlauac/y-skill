@@ -1,3 +1,13 @@
-# skill  n  got   (passing baseline: correctly-regenerated g-rec)
+# skill  n  got   (passing baseline: correctly-regenerated skills)
+# Each line is a value a correctly-regenerated skill should produce when
+# exercised strictly by its recurrence; grade.sh checks them against oracle.ml.
 g-rec 3 6
 g-rec 4 17
+s-rec 4 35
+s-rec 6 131
+q-rec 5 39
+q-rec 6 52
+z-rec 5 -23
+z-rec 6 52
+collatz 7 16
+collatz 27 111

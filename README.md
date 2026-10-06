@@ -64,7 +64,6 @@ the structural test below checks.
 | `.claude/skills/y-skill/` | The meta-skill — the Y combinator itself, written under the **infinite-context hypothesis**. Invoked as `/y-skill <name> <topic>`. |
 | `.claude/skills/g-rec/`   | Generated. `G(0)=2, G(1)=1, G(n)=3·G(n−1)−G(n−2)+1`. *Tree* recursion (two consultations per step); terminates (well-founded topic). |
 | `.claude/skills/s-rec/`   | Generated. `S(0)=5, S(n)=2·S(n−1)−3`. *Linear* recursion (one consultation per step); terminates (well-founded topic). |
-| `.claude/skills/hanoi-moves/` | Generated. Lists the Tower-of-Hanoi moves for *n* disks; terminates (well-founded topic). |
 | `.claude/skills/collatz/` | Generated. Collatz stopping time `T(1)=0; T(n)=1+T(n/2)` if even, `1+T(3n+1)` if odd. *General* recursion — no well-founded measure, so it may not terminate. The case the infinite-context combinator exists for. |
 | `PROMPTS.md` | The exact `/y-skill` prompt, the math recurrence, and the OCaml equivalent for each generated skill — the reference answers for testing. |
 | `rec/` | An earlier standalone sketch of the same idea. |
@@ -76,7 +75,7 @@ Skills are discovered from `.claude/skills/`. Nothing to build.
 **Project-scoped (recommended).** Clone the repo and open Claude Code with
 this directory as the working directory; the four skills under
 `.claude/skills/` are picked up automatically and exposed as `/y-skill`,
-`/g-rec`, `/s-rec`, `/hanoi-moves`.
+`/g-rec`, `/s-rec`.
 
 ```sh
 git clone <this-repo> y-skill
@@ -102,7 +101,6 @@ cases until it hits a base case, then folds the answer back up.
 |---------|----------|
 | `/g-rec 4` | `17` |
 | `/s-rec 6` | `131` |
-| `/hanoi-moves` on 3 disks | 7 moves, ending `disk 1: A→C` |
 | `/collatz 3` | `7` |
 | `/collatz 27` | `111` (but 111 deep — expect it to hit a context or loop limit; see the gap section) |
 
@@ -133,7 +131,7 @@ are the file's *tail* (from the first kept header to EOF), so the check is just
 # from the repo root
 ref=$(mktemp)
 sed -n '/^# The worked example is this skill$/,$p' .claude/skills/y-skill/SKILL.md > "$ref"
-for s in g-rec s-rec hanoi-moves collatz; do
+for s in g-rec s-rec collatz; do
   sed -n '/^# The worked example is this skill$/,$p' ".claude/skills/$s/SKILL.md" \
     | diff -q - "$ref" >/dev/null && echo "MATCH  $s" || echo "DIFFER $s"
 done
@@ -174,7 +172,7 @@ only at a directly-answered case. So the combinator is the honest Y: a fixpoint
 operator with *no* termination guarantee.
 
 Termination is pushed down to each **topic**. A topic with a well-founded
-measure — every consultation strictly smaller (`g-rec`, `s-rec`, `hanoi-moves`)
+measure — every consultation strictly smaller (`g-rec`, `s-rec`)
 — always bottoms out; that is the μ (least-fixpoint / inductive) special case,
 termination for free. A topic without one — `collatz`, whose odd step `3n+1`
 grows — is general recursion and need not halt. Both are *faithful* children:

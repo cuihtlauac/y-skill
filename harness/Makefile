@@ -16,13 +16,15 @@ structural:
 grade:
 	@sh $(H)grade.sh $(H)results.txt
 
-## broken     : negative control — grading the injected fault MUST fail
+## broken     : negative control — grading the injected faults MUST fail
+##              one wrong value per recursion (incl. collatz) to prove each
+##              skill's behavioural gate is live, not just g-rec's.
 broken:
-	@printf 'g-rec 3 -1\ng-rec 4 -2\n' > $(H)broken.txt
+	@printf 'g-rec 4 -2\ns-rec 6 130\nq-rec 5 40\nz-rec 5 23\ncollatz 27 110\n' > $(H)broken.txt
 	@if sh $(H)grade.sh $(H)broken.txt >/dev/null 2>&1; then \
-		echo "UNEXPECTED: harness passed the broken variant"; rm -f $(H)broken.txt; exit 1; \
+		echo "UNEXPECTED: harness passed a broken variant"; rm -f $(H)broken.txt; exit 1; \
 	else \
-		echo "OK: harness rejected the broken variant (as it should)"; rm -f $(H)broken.txt; \
+		echo "OK: harness rejected the broken variants (as it should)"; rm -f $(H)broken.txt; \
 	fi
 
 clean:
