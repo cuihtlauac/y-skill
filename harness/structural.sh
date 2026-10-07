@@ -31,5 +31,13 @@ for d in "$SKILLS"/*/; do
   fi
 done
 rm -f "$ref"
-[ "$rc" = 0 ] && echo "STRUCTURAL: PASS ($checked children checked)" || echo "STRUCTURAL: FAIL"
+if [ "$rc" != 0 ]; then
+  echo "STRUCTURAL: FAIL"
+elif [ "$checked" = 0 ]; then
+  # A fresh clone has no generated children (they are gitignored) and the only
+  # tracked sibling, word-rev-sub, is exempt — so this pass is vacuous.
+  echo "STRUCTURAL: PASS (vacuous — 0 children present; mint some via /y-skill to exercise this gate)"
+else
+  echo "STRUCTURAL: PASS ($checked children checked)"
+fi
 exit "$rc"

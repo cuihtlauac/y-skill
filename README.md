@@ -61,8 +61,11 @@ That is the whole programming model: say which cases are answered directly,
 and how every other case is built from consultations on other cases. Then run
 `/r-rec 4` and check it by hand (3, 7, 16, 35, 74…). The existing skills'
 exact prompts, recurrences, and OCaml reference code are in
-[`PROMPTS.md`](PROMPTS.md); `make -C harness test` checks every shipped skill
-against an OCaml oracle.
+[`PROMPTS.md`](PROMPTS.md); an OCaml oracle (`harness/oracle.ml`) gives ground
+truth for every skill, and [`harness/`](harness/README.md) grades exercised
+values against it. (The automated `make -C harness test` checks structure and
+the committed baselines; actually exercising skills is an agent-driven stage —
+see the harness README.)
 
 ## What to expect
 
@@ -87,14 +90,20 @@ honest caveat:
    training data to recite.
 2. **The trace is auditable.** The unfolding is visible step by step — you can
    check each consultation applied the rule, not just the final number.
-3. **An oracle grades it.** `make -C harness test` compares exercised values
-   against a deterministic OCaml implementation (`harness/oracle.ml`).
+3. **An oracle grades it.** A deterministic OCaml implementation
+   (`harness/oracle.ml`) is ground truth, and `harness/grade.sh` compares
+   exercised values against it. Exercising the skills is an agent-driven stage
+   (see [`harness/README.md`](harness/README.md)); the automated `make -C
+   harness test` grades the committed baselines, which checks the plumbing,
+   not the model.
 4. **The broken-variant test** — the sharpest one. Inject a deliberately wrong
    coefficient into a skill and the model produces *faithfully wrong* values
    (the buggy `g-rec` yields −1, −2 where the true values are 6, 17). A model
    that recited from knowledge would "helpfully" return the correct sequence;
    following a wrong rule off a cliff is exactly what honest rule-following
-   looks like. `make -C harness broken` automates the check.
+   looks like. That live run is on record in
+   [`harness/README.md`](harness/README.md); `make -C harness broken` keeps the
+   grader itself honest by confirming it rejects known-wrong values.
 
 The caveat: none of this *eliminates* shortcutting — a small or famous case
 may still be answered from memory, and fidelity drifts as chains get deep.
@@ -109,7 +118,7 @@ result.
 
 | Doc | What's in it |
 |-----|--------------|
-| [`TLDR.md`](TLDR.md) | The long version: the idea in full, the infinite-context idealization and its gap (LBA vs TM, the disk trampoline), the subagent experiment that didn't pan out, related work. |
+| [`TLDR.md`](TLDR.md) | The long version: the idea in full, the infinite-context idealization and its gap (finite context vs TM, the disk trampoline), the subagent experiment that didn't pan out, related work. |
 | [`PROOF.md`](PROOF.md) | Is this Turing complete? Two constructions (native SK evaluation; TM simulation on an external tape), held to the *Surprisingly Turing-Complete* catalog's standards. |
 | [`PROMPTS.md`](PROMPTS.md) | Every generated skill's defining prompt, recurrence, and OCaml reference. |
 | [`harness/`](harness/README.md) | The test harness: structural gate (fixpoint invariant) + behavioural gate (oracle). |

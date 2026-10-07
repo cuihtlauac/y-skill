@@ -7,10 +7,17 @@
 set -u
 HERE=$(dirname "$0")
 RES="${1:-$HERE/results.txt}"
+if [ ! -f "$RES" ]; then
+  echo "ERROR: results file not found: $RES"
+  echo "BEHAVIOURAL: FAIL"
+  exit 1
+fi
 rc=0
+cases=0
 while read -r skill n got rest; do
   [ -z "${skill:-}" ] && continue
   case "$skill" in \#*) continue ;; esac
+  cases=$((cases + 1))
   want=$(opam exec -- ocaml "$HERE/oracle.ml" "$skill" "$n") || { echo "ERROR oracle $skill $n"; rc=1; continue; }
   if [ "$got" = "$want" ]; then
     echo "PASS  $skill($n)  got=$got  oracle=$want"
@@ -19,5 +26,9 @@ while read -r skill n got rest; do
     rc=1
   fi
 done < "$RES"
-[ "$rc" = 0 ] && echo "BEHAVIOURAL: PASS" || echo "BEHAVIOURAL: FAIL"
+if [ "$cases" = 0 ]; then
+  echo "ERROR: no cases in $RES — an empty gate proves nothing"
+  rc=1
+fi
+[ "$rc" = 0 ] && echo "BEHAVIOURAL: PASS ($cases cases)" || echo "BEHAVIOURAL: FAIL"
 exit "$rc"

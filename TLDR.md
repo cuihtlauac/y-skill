@@ -222,9 +222,13 @@ and genuinely powerful:
 In any real deployment the context window is a **fixed finite cap**. Each
 consultation re-injects the whole `SKILL.md` plus the model's reasoning, and
 nothing is ever freed, so the recursion's stack space *is* the context. A
-device whose entire working memory is a fixed finite size that it re-reads in
-full each step is, formally, a **linear bounded automaton** — it decides the
-context-sensitive languages, strictly weaker than a Turing machine. Depth is
+device whose entire working memory is one fixed finite buffer is, formally, a
+**finite-state machine** — astronomically many states, but finitely many, and
+strictly weaker than a Turing machine. (The tempting label **linear bounded
+automaton**, which decides the context-sensitive languages, needs an assumption
+a fixed cap denies: an LBA's tape scales *linearly with the input*. It fits
+only under the milder idealization that the window grows with input size —
+either way, short of TM power.) Depth is
 capped at roughly `context ÷ cost-per-frame` (a few hundred to low thousands).
 So run as-is, `collatz` is a *bounded-memory approximation* of the infinite
 object it describes: `/collatz 3` (depth 7) is fine, `/collatz 27` (depth 111)
@@ -254,8 +258,8 @@ Both — and which one depends precisely on whether you treat the context as
 finite:
 
 - **Relative to a fixed finite context (reality): it is a computability
-  requirement.** It is the step that promotes the system from a linear bounded
-  automaton to a Turing machine. Without an external store there are total,
+  requirement.** It is the step that promotes the system from a finite-memory
+  device to a Turing machine. Without an external store there are total,
   well-defined recursions you simply cannot run to completion, because their
   working memory exceeds the window.
 - **Relative to an idealized unbounded-growing context (what `collatz`
@@ -338,7 +342,7 @@ idealizations stated):
   skill formalism is Turing complete with **no external machinery at all**: no
   store, no driver — the consultation chain *is* the machine.
 - **Finite regime.** Refusing that idealization, the disk trampoline's external
-  tape does the LBA→TM promotion: a general simulation of an arbitrary Turing
+  tape does the finite-memory→TM promotion: a general simulation of an arbitrary Turing
   machine (transition table as the skill body, tape on the store), runnable in
   [`demo/unary-tm/`](demo/unary-tm/).
 

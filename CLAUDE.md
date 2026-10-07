@@ -51,8 +51,8 @@ OCaml runs through `opam exec --` only (see the user-level `ocaml` skill rule).
 
 - `README.md` — short, code-first intro ("try it", cost warning, "is the model
   cheating?"). Keep it short; depth goes elsewhere.
-- `TLDR.md` — the long version: theory, the infinite-context gap (LBA vs TM,
-  disk trampoline), the subagent negative result, related work.
+- `TLDR.md` — the long version: theory, the infinite-context gap (finite
+  context vs TM, disk trampoline), the subagent negative result, related work.
 - `PROOF.md` — Turing-completeness constructions (native SK; finite-regime TM).
 - `PROMPTS.md` — per-skill specs: prompt, recurrence, OCaml reference.
 - `harness/README.md` — gates, components, known limitations.

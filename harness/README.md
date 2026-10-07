@@ -18,7 +18,7 @@ ties them together.
 |------|------|
 | `oracle.ml` | Ground-truth recurrences (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`, `word-rev`) plus a normal-order SK+δ normalizer for `ski-eval` (fuel-bounded, since Y-terms may diverge). `opam exec -- ocaml harness/oracle.ml <skill> <arg>` prints the value. The arg is a number for the numeric skills, a word for `word-rev`, and a space-free combinator term for `ski-eval`; output is printed as a string, so `grade.sh`'s string compare handles all three. `collatz` is not structurally decreasing (the Collatz conjecture); it terminates for every tested `n` but there is no proof it does for all. |
 | `structural.sh` | Kept sections are the file's tail (from the first kept header to EOF); compares that tail to `y-skill/SKILL.md` for every child. Exits non-zero on drift. `word-rev-sub` is exempt: it is a *sibling combinator* (consult = spawn a subagent), so it rewrites the kept sections by design. |
-| `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch. |
+| `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch — or if the table is missing or has zero cases, so an empty run cannot masquerade as a pass. |
 | `results.txt` | Passing baseline for every skill (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`, `word-rev`, `ski-eval`). |
 | `Makefile` | `test` (both gates), `structural`, `grade`, `broken` (negative control), `clean`. |
 
@@ -33,6 +33,15 @@ make -C harness broken    # negative control: injected fault MUST be rejected
 
 (or `cd harness && make test`). The individual gates are also runnable directly:
 `sh harness/structural.sh .` and `sh harness/grade.sh harness/results.txt`.
+
+**These gates alone never invoke a skill.** On a fresh clone the structural
+gate is *vacuous* (generated children are gitignored, and the only tracked
+sibling, `word-rev-sub`, is exempt by design — the script says so in its PASS
+line), and `results.txt`'s committed baselines are oracle-derived, so grading
+them is a self-check of the oracle + grader plumbing. Likewise `broken` feeds
+the grader hand-written wrong values: it is a negative control *of the gate*,
+not a model run. Coverage of actual skill behaviour comes from the agent-driven
+stage below.
 
 ### Agent-driven stage: regenerate + exercise
 

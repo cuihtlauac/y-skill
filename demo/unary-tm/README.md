@@ -69,4 +69,5 @@ The `PROOF.md` construction is a general reduction (any TM → a skill). This de
 is the catalog-style *implementation exhibit* that accompanies it: the
 construction doesn't just typecheck on paper, it runs — and the tape visibly
 grows past its starting length (`111` → `1111`) while each step holds only O(1)
-state, which is exactly the LBA→TM separation the proof turns on.
+state, which is exactly the bounded-control / unbounded-tape separation the
+proof turns on.

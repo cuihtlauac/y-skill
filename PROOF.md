@@ -17,7 +17,7 @@ There are two constructions, one per idealization regime:
 2. **The finite regime** (§3). Refusing that idealization, an external unbounded
    store plus a dumb re-invocation driver recover Turing power from a finite
    context: a general simulation of an arbitrary Turing machine. This is the
-   construction that speaks to physical reality (the LBA→TM promotion).
+   construction that speaks to physical reality (the finite-memory→TM promotion).
 
 Both rest on one shared assumption — a **faithful interpreter** — examined in §4.
 
@@ -32,7 +32,7 @@ machine). Each idealization used here is one the catalog's entries also rely on.
    infinite-context hypothesis (the context as unbounded tape); the finite
    construction needs an unbounded external store. *Identical idealization,
    relocated.* On finite hardware every catalog entry (and every real computer)
-   is really a linear bounded automaton; the unbounded-memory assumption is what
+   is really a finite-state machine; the unbounded-memory assumption is what
    lifts all of them, uniformly, to TM power.
 
 2. **An external clock / driver** — *finite regime only*. The TM construction's
@@ -123,7 +123,7 @@ repo's own examples run on its own universal machine.
 
 The native proof leans on the infinite-context hypothesis. This construction
 refuses it and shows what recovers Turing power in a *finite* context: the disk
-trampoline's external tape (the LBA→TM promotion of TLDR.md's gap section).
+trampoline's external tape (the finite-memory→TM promotion of TLDR.md's gap section).
 
 Fix any single-tape deterministic Turing machine
 
@@ -179,8 +179,9 @@ The unary successor `n ↦ n+1`, tape alphabet `{1, ␣}`, one non-halting state
 Hand it `111` with the head on the left: the driver runs the step four times
 (`1,1,1,␣`) and halts with `1111` on the tape. The construction is δ-agnostic, so
 a machine whose tape grows without bound (e.g. unary doubling, `n ↦ 2n`) is
-handled by the *same* step with a different finite table — which is exactly how
-the simulation exceeds any linear bounded automaton.
+handled by the *same* step with a different finite table — the tape grows as
+far as the run demands, past any bound fixed in advance, which is exactly what
+no fixed-memory device can do.
 
 This instance is runnable: [`demo/unary-tm/`](demo/unary-tm/) ships the table as
 `RULES.md` and a one-command driver (`sh demo/unary-tm/run.sh 3`), and documents
