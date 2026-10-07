@@ -20,7 +20,7 @@ grade:
 ##              one wrong value per recursion (incl. collatz) to prove each
 ##              skill's behavioural gate is live, not just g-rec's.
 broken:
-	@printf 'g-rec 4 -2\ns-rec 6 130\nq-rec 5 40\nz-rec 5 23\ncollatz 27 110\nword-rev stressed stressed\nski-eval add(2)(3) 6\n' > $(H)broken.txt
+	@printf 'g-rec 4 -2\ns-rec 6 130\nq-rec 5 40\nz-rec 5 23\ncollatz 27 110\nword-rev stressed stressed\nski-eval add(2)(3) 6\nski-eval mul(6)(9) 42\n' > $(H)broken.txt
 	@if sh $(H)grade.sh $(H)broken.txt >/dev/null 2>&1; then \
 		echo "UNEXPECTED: harness passed a broken variant"; rm -f $(H)broken.txt; exit 1; \
 	else \

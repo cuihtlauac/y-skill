@@ -115,6 +115,7 @@ cases until it hits a base case, then folds the answer back up.
 | `/collatz 27` | `111` (but 111 deep — expect it to hit a context or loop limit; see the gap section) |
 | `/ski-eval S(K)(K)(7)` | `7` |
 | `/ski-eval add(mul(2)(3))(1)` | `7` |
+| `/ski-eval mul(6)(7)` | `42` |
 
 Cross-check any value against the OCaml in `PROMPTS.md`. For example:
 

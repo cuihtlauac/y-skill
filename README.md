@@ -26,6 +26,7 @@ Then, inside Claude Code:
 | `/collatz 3` | `7` |
 | `/ski-eval S(K)(K)(7)` | `7` |
 | `/ski-eval add(mul(2)(3))(1)` | `7` |
+| `/ski-eval mul(6)(7)` | `42` — the Answer. Deep Thought needed 7.5 million years, which is roughly this skill's throughput. |
 
 Watch the trace: the skill unfolds case by case, consulting its own file,
 then folds the answers back up. `/ski-eval` is the deep end — a universal

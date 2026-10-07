@@ -16,6 +16,7 @@ collatz 27 111
 word-rev stressed desserts
 word-rev level level
 ski-eval I(42) 42
+ski-eval mul(6)(7) 42
 ski-eval S(K)(K)(7) 7
 ski-eval add(mul(2)(3))(1) 7
 ski-eval cond(eq(1)(2))(0)(9) 9

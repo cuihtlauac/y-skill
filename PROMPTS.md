@@ -220,6 +220,9 @@ First values (each `→*` is one consultation chain):
     S(K)(K)(7)            →* 7          (S K K = I)
     add(mul(2)(3))(1)     →* 7          (δ-rules + strictness)
     cond(eq(1)(2))(0)(9)  →* 9
+    mul(6)(7)             →* 42         (the Answer; and the negative control
+                                         checks that mul(6)(9), the famously
+                                         wrong question, is rejected)
 
 The flagship: `s-rec` compiled to combinators by bracket abstraction
 (mechanically — see the note below), then run as a *program* on this evaluator:
