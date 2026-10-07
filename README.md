@@ -16,7 +16,20 @@ cd y-skill
 claude
 ```
 
-Then, inside Claude Code:
+A fresh clone ships exactly **one** skill: the combinator itself. The example
+skills below are deliberately *not* committed — they are outputs, and
+`/y-skill` reproduces them. So the first thing to do inside `claude` is mint
+one. Paste `s-rec`'s defining prompt (every example's exact prompt is in
+[`PROMPTS.md`](PROMPTS.md)):
+
+```
+/y-skill s-rec to compute S(n) for a whole number n from 0 upwards: S(0) = 5.
+Answer that case directly. For n of 1 or more, S(n) = 2 * S(n - 1) - 3.
+Do not work these values yourself, consult the supporting file once on
+case n - 1, then compute the answer. Reply with number only
+```
+
+Now `/s-rec 6` answers `131`. Once you have minted the others the same way:
 
 | You type | You get |
 |----------|---------|

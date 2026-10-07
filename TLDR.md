@@ -80,9 +80,12 @@ the structural test below checks.
 Skills are discovered from `.claude/skills/`. Nothing to build.
 
 **Project-scoped (recommended).** Clone the repo and open Claude Code with
-this directory as the working directory; the skills under
-`.claude/skills/` are picked up automatically and exposed as `/y-skill`,
-`/g-rec`, `/s-rec`, `/q-rec`, `/z-rec`, `/word-rev`, `/collatz`, `/ski-eval`.
+this directory as the working directory. Only the combinator itself is
+tracked — the generated skills are gitignored because `/y-skill` reproduces
+them. Mint each child you want by pasting its defining prompt from
+`PROMPTS.md`; it is then picked up from `.claude/skills/` and exposed as a
+slash command (`/g-rec`, `/s-rec`, `/q-rec`, `/z-rec`, `/word-rev`,
+`/collatz`, `/ski-eval`).
 
 ```sh
 git clone https://github.com/cuihtlauac/y-skill.git
