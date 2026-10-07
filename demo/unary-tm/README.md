@@ -38,7 +38,7 @@ the step function needs no intelligence, only faithful rule-following.
 The same machine was run with **Claude as the interpreter**: a dumb driver loop
 re-invoked a *fresh subagent per step*, whose entire context was `RULES.md` plus
 a `config.txt` tape file — it never saw the history, it re-read the tape each
-step. That is the trampoline from the README's gap section: bounded control
+step. That is the trampoline from TLDR.md's gap section: bounded control
 re-read each step, unbounded tape outside, context compacted (here, discarded)
 between steps.
 

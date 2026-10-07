@@ -90,4 +90,4 @@ directions (for the full harness):
 
 Exercising a skill by **spawning one subagent per recursion frame** (the subagent
 tree as an externalized stack, to push depth past a single context window) is left
-for later — see the "infinite-context" discussion in the top-level README.
+for later — see the "infinite-context" discussion in the top-level TLDR.md.

@@ -121,7 +121,7 @@ repo's own examples run on its own universal machine.
 
 The native proof leans on the infinite-context hypothesis. This construction
 refuses it and shows what recovers Turing power in a *finite* context: the disk
-trampoline's external tape (the LBA→TM promotion of the README's gap section).
+trampoline's external tape (the LBA→TM promotion of TLDR.md's gap section).
 
 Fix any single-tape deterministic Turing machine
 
@@ -132,7 +132,7 @@ We build a skill **S(M)** that simulates it.
 **Data — the tape — lives on the external store.** The store holds one
 *configuration*: the tape contents (a finite string over Γ, understood to be
 padded with the blank ␣ in both directions), the head position, and the current
-state q ∈ Q. This is precisely the trampoline state file the README specifies;
+state q ∈ Q. This is precisely the trampoline state file TLDR.md specifies;
 it has no size cap, so the tape is unbounded.
 
 **Control — the transition table — lives in the skill body.** `S(M)`'s body is
@@ -207,7 +207,7 @@ about the CSS specification, not about whether your browser has rendering bugs.
 So on the *applicable* ground — "does the formalism express universal computation
 under faithful semantics?" — y-skill stands with the catalog. The residual
 difference (the default interpreter can err) is a reliability remark, and the
-README's "Practical ceilings you hit first" already owns it.
+TLDR.md's "Practical ceilings you hit first" already owns it.
 
 ## 5. Corroborating routes
 
@@ -245,6 +245,6 @@ make mistakes. What the constructions settle is the question of *kind*: the
 skill formalism is not a weaker automaton that merely looks expressive; given
 the same idealizations everyone else is granted, it is Turing complete — and in
 the native regime, it is Turing complete *through the very self-consultation
-mechanism the repo exists to exhibit*. See the README section "The
+mechanism the repo exists to exhibit*. See the TLDR.md section "The
 infinite-context idealization and the gap" for the finite-reality side of the
 ledger.
