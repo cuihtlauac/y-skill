@@ -112,6 +112,12 @@ a machine whose tape grows without bound (e.g. unary doubling, `n ↦ 2n`) is
 handled by the *same* step with a different finite table — which is exactly how
 the simulation exceeds any linear bounded automaton.
 
+This instance is runnable: [`demo/unary-tm/`](demo/unary-tm/) ships the table as
+`RULES.md` and a one-command driver (`sh demo/unary-tm/run.sh 3`), and documents
+the LLM-as-CPU run (a fresh subagent per step over an external tape file) that
+reproduced the same trace — the catalog-style implementation exhibit alongside
+this construction.
+
 ## 3. Why the "stochastic interpreter" objection doesn't lower the grade
 
 The one ground on which no other catalog entry sits is that our *default*
