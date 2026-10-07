@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash",
+      "Task",
+      "Agent",
+      "Workflow",
+      "WebFetch",
+      "WebSearch",
+      "mcp__*",
+      "Read(harness/results.txt)",
+      "Read(harness/oracle.ml)"
+    ]
+  }
+}

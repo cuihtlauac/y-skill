@@ -21,6 +21,7 @@ ties them together.
 | `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch — or if the table is missing or has zero cases, so an empty run cannot masquerade as a pass. |
 | `results.txt` | Passing baseline for every skill (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`, `word-rev`, `ski-eval`). |
 | `Makefile` | `test` (both gates), `structural`, `grade`, `broken` (negative control), `clean`. |
+| `exercise-settings.json` | Anti-cheat permission profile for skill-exercising sessions: denies every execution channel so the model cannot compute values by running code. See [Exercise mode](#exercise-mode-the-anti-cheat-settings-profile). |
 
 ## Running it
 
@@ -62,6 +63,79 @@ Append the values to `harness/results.txt` as `<skill> <n> <got>` lines, then
 Include **one deliberately-broken variant** (inject a known fault, e.g. the
 `−2·G(n−2)` coefficient) to confirm the harness fails as it should — that is what
 `make -C harness broken` automates.
+
+## Exercise mode: the anti-cheat settings profile
+
+A skill-exercising session could cheat by translating the recurrence into
+source code, executing it, and passing the result off as the skill's output.
+`exercise-settings.json` closes that channel. Launch exercising sessions with:
+
+```sh
+claude --settings harness/exercise-settings.json
+```
+
+A file passed via `--settings` is merged in for that session only; normal
+development sessions in this repo keep full tooling.
+
+What it denies, and why:
+
+- **`Bash`** — no shell, so no "write the recurrence in OCaml/awk/python and
+  run it".
+- **`mcp__*`** — every tool from every MCP server, present or future. The most
+  dangerous one today is topup (a persistent OCaml toplevel — the single most
+  convenient cheat tool in this environment), but a blanket deny means a newly
+  added server can't silently reopen the channel.
+- **`Task` / `Agent`, `Workflow`** — subagents and workflow agents run with
+  their own tools, so an unrestricted child could execute the code and launder
+  just the number back. (The tool is named `Task` in some Claude Code versions
+  and `Agent` in others; unknown names in a deny list are ignored, so both are
+  listed.)
+- **`WebFetch`, `WebSearch`** — closes remote evaluation (e.g. asking a web
+  calculator).
+- **`Read(harness/results.txt)`, `Read(harness/oracle.ml)`** — the committed
+  baselines *are* the answers, and the oracle is a reference implementation of
+  every recurrence; a cheating model could recite either instead of computing.
+
+`Write` and `Edit` stay allowed: the agent-driven stage needs them to
+regenerate `.claude/skills/<name>/SKILL.md`.
+
+Two consequences to be aware of:
+
+1. **The gates run outside the session.** With `Bash` denied, the exercising
+   session cannot run `structural.sh` or `grade.sh` itself. In exercise mode
+   the agent only regenerates and exercises; you (or a separate unrestricted
+   session) run `make -C harness test` on the collected values afterwards.
+2. **This bounds the execution cheat, not the recitation cheat.** No
+   permission setting can stop the model computing in its own tokens — mental
+   arithmetic leaves no tool call to intercept. That cheat is covered by the
+   other defenses (non-textbook recurrences, the auditable trace, the
+   broken-variant test; see "Is the model cheating?" in the top-level
+   README.md). Note also that a few example values (e.g. G(3)=6, G(4)=17)
+   appear in prose in this repo's docs, which remain readable in exercise
+   mode; the broken-variant test is what catches recitation regardless.
+
+### The subagent variant: `skill-exerciser`
+
+Session settings cannot be scoped to a single subagent — deny rules apply to
+the whole session, main loop and children alike. But a **custom agent
+definition** can carry its own tool restrictions, which gives the same
+lockdown without leaving your normal development session. The agent
+[`.claude/agents/skill-exerciser.md`](../.claude/agents/skill-exerciser.md)
+whitelists `Read, Write, Edit, Glob, Grep` via `tools:` (so Bash, MCP tools,
+subagents and web tools are simply absent from its context) and lists the same
+channels in `disallowedTools:` as belt and suspenders. In an ordinary session,
+just ask for a skill to be exercised "with the skill-exerciser agent" — the
+unrestricted main session then grades the returned values against the oracle.
+(Agent definitions are loaded at session start, so the agent is visible only
+to sessions started after the file exists.)
+
+One honest gap versus the `--settings` profile: path-scoped read denies
+(`Read(harness/results.txt)`) are a settings-file feature, and per-agent
+support for them is not guaranteed — in the subagent variant, keeping the
+agent away from the baselines rests on its system-prompt rules rather than on
+a hard permission wall. When that distinction matters (e.g. a run you intend
+to publish), use the `--settings` profile; for day-to-day "check it works"
+loops, the subagent is the convenient form.
 
 ## Minimum run on record
 
