@@ -4,11 +4,13 @@
 
 Invoked as `/y-skill` with these arguments:
 
-> /y-skill g-rec to compute G(n) for a whole number n from 0 upwards: G(0) = 2,
-> G(1) = 1. Answers those cases directly. For n of 2 or more,
-> G(n) = 3 * G(n - 1) - G(n - 2) + 1. Do not work these values yourself,
-> consult the supporting file once case n - 1 and once again on case n - 2,
-> then compute the anwser. Reply with number only
+```
+/y-skill g-rec to compute G(n) for a whole number n from 0 upwards: G(0) = 2,
+G(1) = 1. Answers those cases directly. For n of 2 or more,
+G(n) = 3 * G(n - 1) - G(n - 2) + 1. Do not work these values yourself,
+consult the supporting file once case n - 1 and once again on case n - 2,
+then compute the anwser. Reply with number only
+```
 
 *(Verbatim record of the run, typos included.)*
 
@@ -54,10 +56,12 @@ a model can recite from memory instead of actually recursing.
 
 ## Prompt used to define the skill
 
-> /y-skill s-rec to compute S(n) for a whole number n from 0 upwards: S(0) = 5.
-> Answer that case directly. For n of 1 or more, S(n) = 2 * S(n - 1) - 3.
-> Do not work these values yourself, consult the supporting file once on
-> case n - 1, then compute the answer. Reply with number only
+```
+/y-skill s-rec to compute S(n) for a whole number n from 0 upwards: S(0) = 5.
+Answer that case directly. For n of 1 or more, S(n) = 2 * S(n - 1) - 3.
+Do not work these values yourself, consult the supporting file once on
+case n - 1, then compute the answer. Reply with number only
+```
 
 ## Math recursion
 
@@ -85,10 +89,12 @@ let rec s n =
 
 ## Prompt used to define the skill
 
-> /y-skill q-rec to compute Q(n) for a whole number n from 0 upwards: Q(0) = 4.
-> Answer that case directly. For n of 1 or more, Q(n) = Q(n - 1) + 2 * n + 1.
-> Do not work these values yourself, consult the supporting file once on
-> case n - 1, then compute the answer. Reply with number only
+```
+/y-skill q-rec to compute Q(n) for a whole number n from 0 upwards: Q(0) = 4.
+Answer that case directly. For n of 1 or more, Q(n) = Q(n - 1) + 2 * n + 1.
+Do not work these values yourself, consult the supporting file once on
+case n - 1, then compute the answer. Reply with number only
+```
 
 ## Math recursion
 
@@ -116,10 +122,12 @@ let rec q n =
 
 ## Prompt used to define the skill
 
-> /y-skill z-rec to compute Z(n) for a whole number n from 0 upwards: Z(0) = 1.
-> Answer that case directly. For n of 1 or more, Z(n) = n - 2 * Z(n - 1).
-> Do not work these values yourself, consult the supporting file once on
-> case n - 1, then compute the answer. Reply with number only
+```
+/y-skill z-rec to compute Z(n) for a whole number n from 0 upwards: Z(0) = 1.
+Answer that case directly. For n of 1 or more, Z(n) = n - 2 * Z(n - 1).
+Do not work these values yourself, consult the supporting file once on
+case n - 1, then compute the answer. Reply with number only
+```
 
 ## Math recursion
 
@@ -154,11 +162,13 @@ answer folded back up is itself a word. Same machinery, non-numeric data.
 
 ## Prompt used to define the skill
 
-> /y-skill word-rev to reverse a word. The empty word reverses to itself; answer
-> that case directly. For a non-empty word, consult the supporting file once on
-> the word with its first letter removed, then append that first letter to the
-> end of the word the consultation returns. Do not reverse the smaller word
-> yourself. Reply with the word only
+```
+/y-skill word-rev to reverse a word. The empty word reverses to itself; answer
+that case directly. For a non-empty word, consult the supporting file once on
+the word with its first letter removed, then append that first letter to the
+end of the word the consultation returns. Do not reverse the smaller word
+yourself. Reply with the word only
+```
 
 ## Structural recursion
 
@@ -198,15 +208,17 @@ own object, as one line of the machine it powers.
 
 ## Prompt used to define the skill
 
-> /y-skill ski-eval to normalize a term of SK combinatory logic with native
-> integers. Terms are built from the atoms S, K, I, B, C, Y, T, F, add, sub,
-> mul, eq, cond and integer numerals by application written f(x). The rules:
-> S(x)(y)(z) → x(z)(y(z)); K(x)(y) → x; I(x) → x; B(x)(y)(z) → x(y(z));
-> C(x)(y)(z) → x(z)(y); Y(f) → f(Y(f)); add/sub/mul/eq fire only on two
-> numerals; cond(T)(x)(y) → x, cond(F)(x)(y) → y. A term in normal form is
-> answered directly. Otherwise perform exactly one leftmost-outermost rewrite
-> (strict primitives first reduce the argument they need) and consult the
-> supporting file once on the resulting term. Reply with the term only
+```
+/y-skill ski-eval to normalize a term of SK combinatory logic with native
+integers. Terms are built from the atoms S, K, I, B, C, Y, T, F, add, sub,
+mul, eq, cond and integer numerals by application written f(x). The rules:
+S(x)(y)(z) → x(z)(y(z)); K(x)(y) → x; I(x) → x; B(x)(y)(z) → x(y(z));
+C(x)(y)(z) → x(z)(y); Y(f) → f(Y(f)); add/sub/mul/eq fire only on two
+numerals; cond(T)(x)(y) → x, cond(F)(x)(y) → y. A term in normal form is
+answered directly. Otherwise perform exactly one leftmost-outermost rewrite
+(strict primitives first reduce the argument they need) and consult the
+supporting file once on the resulting term. Reply with the term only
+```
 
 ## Shape of the recursion
 
