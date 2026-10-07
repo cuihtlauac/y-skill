@@ -269,6 +269,17 @@ order:
 4. **No native return** — there is no call stack, so the state file *is* the
    entire return mechanism; it is the part most likely to go wrong.
 
+### So is it Turing complete?
+
+Yes — under the idealizations above (unbounded store, faithful interpreter),
+with the external tape doing the LBA→TM promotion. [`PROOF.md`](PROOF.md) gives
+the full construction: a general simulation of an arbitrary Turing machine (the
+finite transition table as the skill body, the tape on the trampoline store),
+held to the standards of the [*Surprisingly Turing-Complete*](https://gwern.net/turing-complete)
+catalog — a general reduction, fully-mechanical forced steps, and an honest
+placement table showing where y-skill matches those entries (every *rigor*
+ground) and where it doesn't (it is *intentional*, so not "accidental").
+
 ## Related work / prior art
 
 The neighbourhood is crowded — recursion in LLM skills and agents, "Y combinator
