@@ -180,3 +180,66 @@ let rec rev s =
   if len = 0 then ""
   else rev (String.sub s 1 (len - 1)) ^ String.make 1 s.[0]
 ```
+
+# ski-eval
+
+The universal one. The examples above each compute *one* function; this skill
+normalizes terms of **SK combinatory logic with native integers**, a
+Turing-complete rewrite system — so this single child of the combinator can
+compute *any* computable function, given the right term. It is the native
+universality proof of `PROOF.md`: pure SK carries the theorem; the δ-rules
+(native numerals with `add`, `sub`, `mul`, `eq`, `cond`) are the standard
+conservative sugar of Plotkin's PCF and Turner's SK reduction machines
+(SASL/Miranda, 1979), there to keep terms small enough for a stochastic
+interpreter to follow. `Y(f) → f(Y(f))` is a primitive rule — the project's
+own object, as one line of the machine it powers.
+
+## Prompt used to define the skill
+
+> /y-skill ski-eval to normalize a term of SK combinatory logic with native
+> integers. Terms are built from the atoms S, K, I, B, C, Y, T, F, add, sub,
+> mul, eq, cond and integer numerals by application written f(x). The rules:
+> S(x)(y)(z) → x(z)(y(z)); K(x)(y) → x; I(x) → x; B(x)(y)(z) → x(y(z));
+> C(x)(y)(z) → x(z)(y); Y(f) → f(Y(f)); add/sub/mul/eq fire only on two
+> numerals; cond(T)(x)(y) → x, cond(F)(x)(y) → y. A term in normal form is
+> answered directly. Otherwise perform exactly one leftmost-outermost rewrite
+> (strict primitives first reduce the argument they need) and consult the
+> supporting file once on the resulting term. Reply with the term only
+
+## Shape of the recursion
+
+One rewrite per consultation, so the chain length is the number of reduction
+steps. `Y(f) → f(Y(f))` grows the term, so there is **no well-founded
+measure** — like `collatz`, a chain may run forever, and under the
+infinite-context hypothesis that is permitted. Termination is a property of
+the *term*, exactly as the README says it is a property of the topic.
+
+First values (each `→*` is one consultation chain):
+
+    I(42)                 →* 42
+    S(K)(K)(7)            →* 7          (S K K = I)
+    add(mul(2)(3))(1)     →* 7          (δ-rules + strictness)
+    cond(eq(1)(2))(0)(9)  →* 9
+
+The flagship: `s-rec` compiled to combinators by bracket abstraction
+(mechanically — see the note below), then run as a *program* on this evaluator:
+
+    Y(B(S(C(B(cond)(C(eq)(0)))(5)))(C(B(C)(B(B(sub))(B(B(mul(2)))(C(B)(C(sub)(1))))))(3)))(6)  →*  131
+
+which matches the `s-rec 6 131` baseline — the same oracle grades the
+recurrence computed directly by `/s-rec` and computed as a program by the
+universal evaluator.
+
+## OCaml code
+
+The normal-order SK+δ normalizer lives in `harness/oracle.ml` (type `sk`,
+functions `ski_parse` / `ski_step` / `ski_normalize` / `ski_print`); it is
+fuel-bounded because Y-terms may diverge. The `s-rec` program above was
+generated, not hand-derived: a ~50-line bracket-abstraction compiler
+(S, K, I, B, C with η) applied to
+
+```ocaml
+(* s = Y (fun f n -> if n = 0 then 5 else 2 * f (n - 1) - 3) *)
+```
+
+and verified against the oracle (`s(0)=5`, `s(3)=19`, `s(6)=131`).

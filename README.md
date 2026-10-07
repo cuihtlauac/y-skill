@@ -68,6 +68,7 @@ the structural test below checks.
 | `.claude/skills/z-rec/`   | Generated. `Z(0)=1, Z(n)=n−2·Z(n−1)`. *Linear* recursion; sign flips every step (good for spotting a dropped minus); terminates (well-founded topic). |
 | `.claude/skills/word-rev/`| Generated. **Non-numeric.** Reverses a word: `rev("")=""`, `rev(x·s)=rev(s)·x`. *Linear structural* recursion — the shrinking case is a shorter *word*, not a number; terminates (well-founded on length). Shows the combinator isn't intrinsically about numbers. |
 | `.claude/skills/collatz/` | Generated. Collatz stopping time `T(1)=0; T(n)=1+T(n/2)` if even, `1+T(3n+1)` if odd. *General* recursion — no well-founded measure, so it may not terminate. The case the infinite-context combinator exists for. |
+| `.claude/skills/ski-eval/` | Generated. **Universal.** Normalizes SK combinatory-logic terms with native integers (δ-rules `add`, `sub`, `mul`, `eq`, `cond`; primitive `Y(f)→f(Y(f))`), one leftmost-outermost rewrite per consultation. General recursion — Y-terms may diverge. The native Turing-completeness construction of [`PROOF.md`](PROOF.md). |
 | `PROMPTS.md` | The exact `/y-skill` prompt, the math recurrence, and the OCaml equivalent for each generated skill — the reference answers for testing. |
 | `rec/` | An earlier standalone sketch of the same idea. |
 
@@ -78,7 +79,7 @@ Skills are discovered from `.claude/skills/`. Nothing to build.
 **Project-scoped (recommended).** Clone the repo and open Claude Code with
 this directory as the working directory; the skills under
 `.claude/skills/` are picked up automatically and exposed as `/y-skill`,
-`/g-rec`, `/s-rec`, `/q-rec`, `/z-rec`, `/word-rev`, `/collatz`.
+`/g-rec`, `/s-rec`, `/q-rec`, `/z-rec`, `/word-rev`, `/collatz`, `/ski-eval`.
 
 ```sh
 git clone https://github.com/cuihtlauac/y-skill.git
@@ -109,6 +110,8 @@ cases until it hits a base case, then folds the answer back up.
 | `/word-rev stressed` | `desserts` |
 | `/collatz 3` | `7` |
 | `/collatz 27` | `111` (but 111 deep — expect it to hit a context or loop limit; see the gap section) |
+| `/ski-eval S(K)(K)(7)` | `7` |
+| `/ski-eval add(mul(2)(3))(1)` | `7` |
 
 Cross-check any value against the OCaml in `PROMPTS.md`. For example:
 
@@ -137,7 +140,7 @@ are the file's *tail* (from the first kept header to EOF), so the check is just
 # from the repo root
 ref=$(mktemp)
 sed -n '/^# The worked example is this skill$/,$p' .claude/skills/y-skill/SKILL.md > "$ref"
-for s in g-rec s-rec q-rec z-rec word-rev collatz; do
+for s in g-rec s-rec q-rec z-rec word-rev collatz ski-eval; do
   sed -n '/^# The worked example is this skill$/,$p' ".claude/skills/$s/SKILL.md" \
     | diff -q - "$ref" >/dev/null && echo "MATCH  $s" || echo "DIFFER $s"
 done
@@ -309,14 +312,26 @@ blow-up is self-inflicted non-tail recursion, not a genuine context need.
 
 ### So is it Turing complete?
 
-Yes — under the idealizations above (unbounded store, faithful interpreter),
-with the external tape doing the LBA→TM promotion. [`PROOF.md`](PROOF.md) gives
-the full construction: a general simulation of an arbitrary Turing machine (the
-finite transition table as the skill body, the tape on the trampoline store),
-held to the standards of the [*Surprisingly Turing-Complete*](https://gwern.net/turing-complete)
-catalog — a general reduction, fully-mechanical forced steps, and an honest
-placement table showing where y-skill matches those entries (every *rigor*
-ground) and where it doesn't (it is *intentional*, so not "accidental").
+Yes — twice over, once per idealization regime. [`PROOF.md`](PROOF.md) gives two
+constructions, held to the standards of the
+[*Surprisingly Turing-Complete*](https://gwern.net/turing-complete) catalog
+(general reduction from a universal model, fully-mechanical forced steps,
+idealizations stated):
+
+- **Native regime.** `ski-eval` — a generated, *faithful* child of the
+  combinator — normalizes SK combinatory-logic terms, one rewrite per
+  consultation. Pure SK is a known-universal model, so under the
+  infinite-context hypothesis (the combinator's own declared semantics) the
+  skill formalism is Turing complete with **no external machinery at all**: no
+  store, no driver — the consultation chain *is* the machine.
+- **Finite regime.** Refusing that idealization, the disk trampoline's external
+  tape does the LBA→TM promotion: a general simulation of an arbitrary Turing
+  machine (transition table as the skill body, tape on the store), runnable in
+  [`demo/unary-tm/`](demo/unary-tm/).
+
+`PROOF.md` ends with an honest placement table: y-skill matches the catalog's
+entries on every *rigor* ground and differs only in being *intentional*, not
+"accidental".
 
 ## Related work / prior art
 
