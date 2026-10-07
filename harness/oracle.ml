@@ -52,7 +52,9 @@ let ski_parse s =
       let st = !pos in
       incr pos;
       while (match peek () with Some d -> is_digit d | None -> false) do incr pos done;
-      SNum (int_of_string (String.sub s st (!pos - st)))
+      let lit = String.sub s st (!pos - st) in
+      if lit = "-" then fail "expected digits after '-'";
+      SNum (int_of_string lit)
     | Some c when is_letter c ->
       let st = !pos in
       while (match peek () with Some d -> is_letter d | None -> false) do incr pos done;
@@ -141,14 +143,22 @@ let () =
     prerr_endline "usage: oracle <skill> <arg>"; exit 2
   end;
   let name = Sys.argv.(1) and arg = Sys.argv.(2) in
-  let num () = int_of_string arg in  (* numeric skills parse the arg on demand *)
+  (* numeric skills parse the arg on demand *)
+  let num () =
+    match int_of_string_opt arg with
+    | Some n -> n
+    | None -> prerr_endline ("not a number: " ^ arg); exit 2
+  in
   let out =
     match name with
     | "g-rec"    -> string_of_int (g (num ()))
     | "s-rec"    -> string_of_int (s (num ()))
     | "q-rec"    -> string_of_int (q (num ()))
     | "z-rec"    -> string_of_int (z (num ()))
-    | "collatz"  -> string_of_int (c (num ()))
+    | "collatz"  ->
+      let n = num () in
+      if n < 1 then (prerr_endline "collatz: the argument must be >= 1"; exit 2);
+      string_of_int (c n)
     | "word-rev" -> rev arg
     | "ski-eval" -> ski_print (ski_normalize (ski_parse arg))
     | other      -> prerr_endline ("unknown skill: " ^ other); exit 2

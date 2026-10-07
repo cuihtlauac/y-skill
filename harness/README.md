@@ -19,7 +19,7 @@ ties them together.
 | `oracle.ml` | Ground-truth recurrences (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`, `word-rev`) plus a normal-order SK+δ normalizer for `ski-eval` (fuel-bounded, since Y-terms may diverge). `opam exec -- ocaml harness/oracle.ml <skill> <arg>` prints the value. The arg is a number for the numeric skills, a word for `word-rev`, and a space-free combinator term for `ski-eval`; output is printed as a string, so `grade.sh`'s string compare handles all three. `collatz` is not structurally decreasing (the Collatz conjecture); it terminates for every tested `n` but there is no proof it does for all. |
 | `structural.sh` | Kept sections are the file's tail (from the first kept header to EOF); compares that tail to `y-skill/SKILL.md` for every child. Exits non-zero on drift. `word-rev-sub` is exempt: it is a *sibling combinator* (consult = spawn a subagent), so it rewrites the kept sections by design. |
 | `grade.sh` | Reads a `<skill> <n> <got>` table (default `harness/results.txt`), compares each `got` to the oracle, exits non-zero on any mismatch. |
-| `results.txt` | Passing baseline for every recursion (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`). |
+| `results.txt` | Passing baseline for every skill (`g-rec`, `s-rec`, `q-rec`, `z-rec`, `collatz`, `word-rev`, `ski-eval`). |
 | `Makefile` | `test` (both gates), `structural`, `grade`, `broken` (negative control), `clean`. |
 
 ## Running it
@@ -65,26 +65,20 @@ The broken variant passes the structural gate (kept sections untouched) and is
 caught only by the behavioural gate — which is exactly the separation we want:
 structure and behaviour are independent failure modes.
 
-## ⚠️ Known limitation: worktree isolation does not hold here
+## Historical limitation: worktree isolation (resolved by the repo move)
 
-The intent was to run each agent in its own git **worktree** so regenerations
-(especially the broken one) never touch the real tree. **This does not work as-is**
-because `y-skill` is a *nested* git repo inside the outer `ai-training` repo. The
-Agent tool's `isolation: worktree` forks the **session's** git root (the outer
-repo), whose worktree does **not** contain the nested `y-skill` files — so the
-agents fall back to writing the real `.claude/skills/<name>/SKILL.md`. In the run
-above, the broken agent clobbered the live `g-rec`, which then had to be restored
-by hand.
+In an earlier layout `y-skill` was a *nested* git repo inside an outer repo, and
+the Agent tool's `isolation: worktree` forks the **session's** git root — the
+outer repo, whose worktree did **not** contain the nested `y-skill` files. The
+agents fell back to writing the real `.claude/skills/<name>/SKILL.md`; in one
+run the broken agent clobbered the live `g-rec`, which had to be restored by
+hand.
 
-Until this is fixed, the agent-driven stage **mutates the real tree** — regenerate
-a known-good copy afterwards, or only run the correct variants live. Fix
-directions (for the full harness):
-
-1. Launch the agents with the **`y-skill` repo as their git root** (so the worktree
-   forks `y-skill`, not the outer repo), or
-2. drop git worktrees for this and have the harness copy `.claude/skills/` +
-   `harness/` into a throwaway temp dir per case, run the agent there, and read
-   back only the JSON.
+The repo now lives at its own git root, so a worktree forks `y-skill` itself
+and that failure mode no longer applies (not yet re-verified with a live
+agent-driven run). If worktrees are unavailable, the fallback remains: copy
+`.claude/skills/` + `harness/` into a throwaway temp dir per case, run the
+agent there, and read back only the JSON.
 
 ## Deferred
 

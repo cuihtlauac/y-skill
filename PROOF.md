@@ -62,8 +62,10 @@ SK term (bracket abstraction), and normal-order reduction computes it. It is the
 same family of citation the catalog uses when an entry encodes λ-calculus, tag
 systems, or Rule 110.
 
-**The skill.** [`ski-eval`](.claude/skills/ski-eval/SKILL.md) is a child minted
-by the combinator in the house style — frontmatter + topic section new, the
+**The skill.** [`ski-eval`](PROMPTS.md#ski-eval) is a child minted
+by the combinator in the house style (its `.claude/skills/ski-eval/SKILL.md`
+is gitignored like every generated child; the defining prompt in `PROMPTS.md`
+regenerates it) — frontmatter + topic section new, the
 three kept sections verbatim (it *passes the structural gate*, unlike the
 `word-rev-sub` sibling). Its topic is one recurrence:
 
@@ -95,7 +97,7 @@ with integer numerals and strict primitives (`add`, `sub`, `mul`, `eq`, `cond`),
 plus `I`, `B`, `C`, and `Y` as primitive rules. This is the standard
 *conservative* extension — δ-rules — with two precedents: **Plotkin's PCF**
 (λ + naturals + cond + fixpoint) and **Turner's SK reduction machines**
-(SASL/Miranda, 1979), which ran real programs on exactly S, K + literals +
+(SASL, 1979; later Miranda), which ran real programs on exactly S, K + literals +
 strict arithmetic, never Church numerals. The universality theorem rests on the
 pure fragment; the sugar exists because Church-numeral arithmetic makes terms
 explode, and term size is where a stochastic interpreter drifts. The trade is

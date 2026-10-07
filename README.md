@@ -16,7 +16,9 @@ cd y-skill
 claude
 ```
 
-A fresh clone ships exactly **one** skill: the combinator itself. The example
+A fresh clone ships just two skills: the combinator itself and
+[`word-rev-sub`](.claude/skills/word-rev-sub/SKILL.md), a hand-written sibling
+kept as a documented negative result (see [`TLDR.md`](TLDR.md)). The example
 skills below are deliberately *not* committed — they are outputs, and
 `/y-skill` reproduces them. So the first thing to do inside `claude` is mint
 one. Paste `s-rec`'s defining prompt (every example's exact prompt is in

@@ -1,6 +1,6 @@
 # Turing machine: unary successor  (n ↦ n+1)
 
-This file is the worked TM from [`../../PROOF.md`](../../PROOF.md) §2 — the
+This file is the worked TM from [`../../PROOF.md`](../../PROOF.md) §3 — the
 *control* of the machine. It is both human-readable and the single source of
 truth that `run.sh` parses and executes, so the "skill body" and the thing that
 runs are the same text.

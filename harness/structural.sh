@@ -14,6 +14,7 @@ kept() { sed -n "/^$MARK\$/,\$p" "$1"; }
 ref=$(mktemp)
 kept "$SKILLS/y-skill/SKILL.md" > "$ref"
 rc=0
+checked=0
 for d in "$SKILLS"/*/; do
   name=$(basename "$d")
   [ "$name" = y-skill ] && continue
@@ -21,6 +22,7 @@ for d in "$SKILLS"/*/; do
   # rewrites the kept sections (consult = spawn a subagent, not re-read).
   [ "$name" = word-rev-sub ] && continue
   [ -f "$d/SKILL.md" ] || continue
+  checked=$((checked + 1))
   if kept "$d/SKILL.md" | diff -q - "$ref" >/dev/null 2>&1; then
     echo "MATCH  $name"
   else
@@ -29,5 +31,5 @@ for d in "$SKILLS"/*/; do
   fi
 done
 rm -f "$ref"
-[ "$rc" = 0 ] && echo "STRUCTURAL: PASS" || echo "STRUCTURAL: FAIL"
+[ "$rc" = 0 ] && echo "STRUCTURAL: PASS ($checked children checked)" || echo "STRUCTURAL: FAIL"
 exit "$rc"

@@ -1,6 +1,6 @@
 # Demo: a Turing machine, run as a skill
 
-This is the worked construction of [`../../PROOF.md`](../../PROOF.md) §2, made
+This is the worked construction of [`../../PROOF.md`](../../PROOF.md) §3, made
 runnable: the **unary-successor Turing machine** (`n ↦ n+1`), with its transition
 table as the *control* and the tape as an *external store*, driven one step at a
 time until it halts.

@@ -60,6 +60,12 @@ topic`) are copied **verbatim** into every generated skill. That word-for-word
 preservation is the invariant that keeps the fixpoint intact, and it is what
 the structural test below checks.
 
+One wrinkle of byte-identical tails: every child's kept `Making a new skill on
+another topic` section still names the meta-skill's topic section, `How to
+write a skill`, which the child no longer has — read it as "the topic section
+at the top of the file". The invariant forces this; it is the price of a
+verbatim fixpoint.
+
 ## What's in here
 
 | Path | What it is |
@@ -73,16 +79,16 @@ the structural test below checks.
 | `.claude/skills/collatz/` | Generated. Collatz stopping time `T(1)=0; T(n)=1+T(n/2)` if even, `1+T(3n+1)` if odd. *General* recursion — no well-founded measure, so it may not terminate. The case the infinite-context combinator exists for. |
 | `.claude/skills/ski-eval/` | Generated. **Universal.** Normalizes SK combinatory-logic terms with native integers (δ-rules `add`, `sub`, `mul`, `eq`, `cond`; primitive `Y(f)→f(Y(f))`), one leftmost-outermost rewrite per consultation. General recursion — Y-terms may diverge. The native Turing-completeness construction of [`PROOF.md`](PROOF.md). |
 | `PROMPTS.md` | The exact `/y-skill` prompt, the math recurrence, and the OCaml equivalent for each generated skill — the reference answers for testing. |
-| `rec/` | An earlier standalone sketch of the same idea. |
+| `rec/` | An earlier standalone sketch of the same idea (kept locally, not committed — absent from a fresh clone). |
 
 ## Installation
 
 Skills are discovered from `.claude/skills/`. Nothing to build.
 
 **Project-scoped (recommended).** Clone the repo and open Claude Code with
-this directory as the working directory. Only the combinator itself is
-tracked — the generated skills are gitignored because `/y-skill` reproduces
-them. Mint each child you want by pasting its defining prompt from
+this directory as the working directory. Only the combinator itself and the
+hand-written `word-rev-sub` sibling are tracked — the generated skills are
+gitignored because `/y-skill` reproduces them. Mint each child you want by pasting its defining prompt from
 `PROMPTS.md`; it is then picked up from `.claude/skills/` and exposed as a
 slash command (`/g-rec`, `/s-rec`, `/q-rec`, `/z-rec`, `/word-rev`,
 `/collatz`, `/ski-eval`).
@@ -132,7 +138,7 @@ let rec g n =
 Note the cost difference the recursion *shape* makes: `s-rec` is linear — one
 consultation per step, a chain of length *n* — while `g-rec` branches into two
 consultations per step, so the number of lookups grows exponentially (`g 4`
-already fans out to 8 base-case consultations). Linear recurrences are the
+already fans out to 8 consultations, 5 of them base-case). Linear recurrences are the
 cheaper, more debuggable models; see `PROMPTS.md` for the rationale and more
 examples.
 

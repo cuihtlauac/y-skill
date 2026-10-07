@@ -10,6 +10,8 @@ Invoked as `/y-skill` with these arguments:
 > consult the supporting file once case n - 1 and once again on case n - 2,
 > then compute the anwser. Reply with number only
 
+*(Verbatim record of the run, typos included.)*
+
 ## Math recursion
 
 $$
@@ -38,8 +40,8 @@ let rec g n =
 
 `g-rec` is a *tree* recursion: each step consults two smaller cases
 (`n-1` and `n-2`), so the number of consultations grows exponentially —
-G(4) already spawned 8 base-case lookups. That is expensive in tokens and
-awkward to trace.
+G(4) already spawned 8 consultations, 5 of them base-case lookups. That is
+expensive in tokens and awkward to trace.
 
 The recursions below are all **linear** (each step consults exactly one
 smaller case, `n-1`), so computing at `n` is a single chain of `n`
@@ -190,7 +192,7 @@ compute *any* computable function, given the right term. It is the native
 universality proof of `PROOF.md`: pure SK carries the theorem; the δ-rules
 (native numerals with `add`, `sub`, `mul`, `eq`, `cond`) are the standard
 conservative sugar of Plotkin's PCF and Turner's SK reduction machines
-(SASL/Miranda, 1979), there to keep terms small enough for a stochastic
+(SASL, 1979; later Miranda), there to keep terms small enough for a stochastic
 interpreter to follow. `Y(f) → f(Y(f))` is a primitive rule — the project's
 own object, as one line of the machine it powers.
 
@@ -212,7 +214,12 @@ One rewrite per consultation, so the chain length is the number of reduction
 steps. `Y(f) → f(Y(f))` grows the term, so there is **no well-founded
 measure** — like `collatz`, a chain may run forever, and under the
 infinite-context hypothesis that is permitted. Termination is a property of
-the *term*, exactly as the README says it is a property of the topic.
+the *term*, exactly as `TLDR.md` says it is a property of the topic.
+
+One tie-break keeps stuck terms deterministic: when a strict primitive's
+leftmost non-numeral argument is itself already normal (e.g. `add(S)(…)`), the
+one rewrite falls to the next argument that contains a redex — the same
+fallback `oracle.ml`'s `ski_step_args` implements.
 
 First values (each `→*` is one consultation chain):
 
