@@ -234,6 +234,17 @@ So run as-is, `collatz` is a *bounded-memory approximation* of the infinite
 object it describes: `/collatz 3` (depth 7) is fine, `/collatz 27` (depth 111)
 will likely wall out against the context or a harness loop limit.
 
+A bigger window would not close the gap on its own: the window's size is not
+the only limit. Qiao et al. (2026, see [related work](#computational-universality-of-prompted-llms))
+prove that a single fixed transformer with finite numerical precision, attending
+over an ever-growing sequence, chain of thought included, cannot simulate
+Turing machines like arithmetic on inputs of unbounded length. Rotary position
+encodings turn periodic and attention weights underflow. Even at infinite
+precision, the influence of any one token is at most a constant times (ln n)^(L−1)/n, for input
+length n and depth L. So the infinite-context hypothesis idealizes the *interpreter* as
+well as the memory: it assumes attention stays exact at any length, which no
+finite-precision model provides.
+
 ### Closing the gap: the disk trampoline
 
 To recover the idealized behaviour you convert the stack recursion into a
@@ -364,6 +375,36 @@ pattern. The nearest work, and how it differs:
 | [`rawwerks/ypi`](https://github.com/rawwerks/ypi) | A recursive coding agent "inspired by RLMs" — an LLM that calls itself. | Agent-level self-calls, not a skill that is its own supporting file. |
 | [`recursive-decomposition-skill`](https://github.com/massimodeluisa/recursive-decomposition-skill) (de Luisa) | A real Claude Code skill; handles long context by **spawning sub-agents** (batches, *depth 1 only*, sub-agents don't recurse). | Recursion = sub-agent fan-out, not self-reading. No Y combinator, no lambda calculus; "recursive" names the decomposition strategy. |
 | [`singularity-claude`](https://github.com/Shmayro/singularity-claude), [`recursive-improve`](https://github.com/kayba-ai/recursive-improve); research: STOP, Ladder | Skills/agents that **score and rewrite themselves** across improvement loops. | A different sense of "recursive": meta-level self-*modification*, not a fixpoint over inputs. |
+
+### Computational universality of prompted LLMs
+
+The Turing-completeness claim (above, and in [`PROOF.md`](PROOF.md)) has close
+precedents. Two papers by Schuurmans and collaborators check universality on
+*specific deployed models*; the others are theory papers on prompted
+transformers and agents. All links go to arXiv; venues are given where the
+paper has been published.
+
+| Work | Result | Relation to this project |
+|------|--------|--------------------------|
+| [Schuurmans (arXiv preprint, 2023), *Memory Augmented Large Language Models are Computationally Universal*](https://arxiv.org/abs/2301.04589) | A deterministic LM over bounded-length inputs is a finite automaton; Flan-U-PaLM 540B plus an associative read-write memory exactly simulates the universal TM U<sub>15,2</sub>, driven by prompts, no weight changes. | The **finite regime**, three years earlier: the disk trampoline and [`demo/unary-tm/`](demo/unary-tm/) are this construction. |
+| [Schuurmans, Dai, Zanini (arXiv preprint, 2024), *Autoregressive Large Language Models are Computationally Universal*](https://arxiv.org/abs/2410.03170) | Autoregressive decoding alone (emitted tokens appended as the window advances) is a Lag system; a universal TM compiled to 2027 production rules, each checked against gemini-1.5-pro-001 under greedy decoding with one system prompt. | Closest to the **native regime** (no external memory), but each step sees a bounded, advancing window, not the unbounded context the infinite-context hypothesis assumes. |
+| [Lewandowski, Machado, Schuurmans (arXiv preprint, 2026), *Universal computation is intrinsic to language model decoding*](https://arxiv.org/abs/2601.08061) | Even randomly initialized models are universal under autoregressive decoding; training buys *programmability*, not expressiveness. | Recasts "can the model compute it?" as "can we find the prompt?" — writing a skill is that search. |
+| [Qiu, Xu, Bao, Tong (ICLR 2025), *Ask, and it shall be given: On the Turing completeness of prompting*](https://arxiv.org/abs/2411.01992) | There is a finite-size Transformer such that every computable function is computed by *some* prompt. | A `SKILL.md` is a prompt: the theoretical backdrop for "a skill can be a program". |
+| [Cui, Wei, He (ICML 2026, Position Paper Track), *Position: The Turing-Completeness of Autoregressive Transformers Relies Heavily on Context Management*](https://arxiv.org/abs/2605.19514) | Separates a *fixed* transformer coupled with a fixed context-management method from a *family* of models whose window or precision grows with input length. Most Turing-completeness proofs live in the family setting, which gives resource bounds, not Turing completeness; real deployments are the fixed setting, where the context-management method determines computational power. | Names the axis this repository's two regimes differ on: the native regime keeps everything in context, the disk trampoline is a context-management method. |
+| [Qiao, Yu, Qiu, Gao (arXiv preprint, 2026), *On the Turing Completeness of Transformers and Agents*](https://arxiv.org/abs/2609.20335) | A single fixed finite-precision transformer, chain of thought included, is not Turing complete on unbounded inputs (Thm 4.1); infinite precision does not rescue it under a positive confidence margin (Thm 4.5), and a transformer trained by a randomized algorithm fails with probability one under stated conditions (Thm 4.6). An agent loop is Turing complete with finite precision (Thm 5.1): decision and execution transformers (possibly one model with two prompts), a memory, and linear-time tools independent of the target machine, each step seeing only a small local window. | Bounds the **native regime** (see [the gap](#the-gap-a-real-context-is-finite)) and gives the **disk trampoline** a formal counterpart, with finite precision. Its agent theorem is an existence proof with constructed weights, not a check of a deployed model. |
+
+**Where they set a higher bar.** The two Schuurmans papers prove a simulation
+*about a specific model*: the rule set is finite and local, so correctness
+reduces to checking the model's output on each rule's prompt, with the model
+run deterministically (greedy decoding, temperature 0, in both). `PROOF.md` §4 instead argues that universality
+is a property of the *notation*. That is true, but it is a theorem about the
+Markdown, not about Claude, and the oracle tests here sample traces rather than
+enumerate a rule table. SK reduction also resists the exhaustive check: `S`
+copies subterms of unbounded size and finding the next redex scans the whole
+term, which is why those papers use TMs and tag/Lag systems with bounded local
+windows. Matching their standard would mean a small universal machine with a
+finite rule table, verified rule by rule against a pinned Claude model at
+temperature 0.
 
 **What appears to be original here:** recursion carried *inside the skill-loading
 mechanism* — a single `SKILL.md` whose only supporting file is itself, re-read on
